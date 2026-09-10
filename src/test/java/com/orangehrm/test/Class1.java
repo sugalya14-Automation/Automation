@@ -9,6 +9,7 @@ public class Class1 extends BaseClass{
 
 	public void class1()
 	{
+		
 		String title = driver.getTitle();
 		
 		assert title.equals("OrangeHRM"):"Not matching";
