@@ -19,8 +19,8 @@ public class LoginPage {
 	private By userNameField = By.name("username");
 	private By passwordField = By.cssSelector("input[type='password']");
 	private By loginButton = By.xpath("//button[text()=' Login ']");
-	private By errorMessage = By.cssSelector(
-		    ".oxd-alert-content oxd-alert-content--error"
+	private By errorMessage = By.xpath(
+		    "//*[@id=\"app\"]/div[1]/div/div[1]/div/div[2]/div[2]/div/div[1]/div[1]/p"
 			);
 	private By dashboard = By.xpath("//h6[text()='Dashboard']");
 	
@@ -58,7 +58,7 @@ public class LoginPage {
 	{
 		
 		Boolean b = actionDriver.isDisplayed(errorMessage);
-		actionDriver.highlightElement(dashboard);
+		actionDriver.highlightElement(errorMessage);
 		return b;
 	}
 	

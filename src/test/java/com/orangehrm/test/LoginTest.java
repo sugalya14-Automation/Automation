@@ -59,26 +59,17 @@ public class LoginTest extends BaseClass{
 		System.out.println("Test method");
 		
 		
-
 		    String username = testData.get("Username");
 		    String password = testData.get("Password");
 		    String expectedResult = testData.get("ExpectedResult");
 		    System.out.println("Executing login for: " + username);
-		    
-		    String testName = testData.get("TestCaseName");
-
-		    if (testName == null || testName.isBlank()) {
-		        testName = "Login_" + username;
-		    }
-
-		    ExtentManager.startTest(testName);
-		 
+	
 
 		    loginPage.login(username, password);
 
 		    
 		    ExtentManager.logStepWithScreenshot(getDriver(),"username", username);
-		    ExtentManager.logStepWithScreenshot(getDriver(),"password", password);
+
 
 		    if ("Pass".equalsIgnoreCase(expectedResult)) {
 		    	

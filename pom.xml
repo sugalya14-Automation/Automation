@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,9 +11,9 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>26</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <selenium.version>4.53.0</selenium.version>
         <log4j.version>2.26.1</log4j.version>
     </properties>
 
@@ -22,7 +23,14 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.48.0</version>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- Chrome 157 DevTools support -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-devtools-v157</artifactId>
+            <version>${selenium.version}</version>
         </dependency>
 
         <!-- TestNG -->
@@ -30,7 +38,6 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.12.0</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Apache POI for Excel -->
@@ -61,5 +68,29 @@
             <version>${log4j.version}</version>
         </dependency>
 
+        <!-- SLF4J to Log4j2 Bridge -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
+	
+	<build>
+	    <plugins>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-surefire-plugin</artifactId>
+	            <version>3.5.4</version>
+	            <configuration>
+	                <suiteXmlFiles>
+	                    <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+	                </suiteXmlFiles>
+	            </configuration>
+	        </plugin>
+	    </plugins>
+	</build>
+
 </project>

@@ -22,8 +22,18 @@ public class ExtentManager {
 	private static Map<Long,WebDriver> driverMap=new HashMap<>();
 	
 	public static ExtentReports getReporter() {
+		
+		String reportDirpath = System.getProperty("user.dir") + "/test-output/ExtentReport";
+		String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+		        .format(new Date());
+		
+		File reportDir = new File(reportDirpath);
+
+		if (!reportDir.exists()) {
+		    reportDir.mkdirs();
+		}
 		if(extent==null) {
-			String reportPath = System.getProperty("user.dir")+"/src/test/resources/ExtentReport/ExtentReport.html";
+			String reportPath = reportDirpath+"/ExtentReport"+timeStamp+".html";
 			ExtentSparkReporter spark = new ExtentSparkReporter(reportPath);
 			spark.config().setReportName("Automation Test Report");
 			spark.config().setDocumentTitle("orangeHRM Report");
@@ -45,9 +55,10 @@ public class ExtentManager {
 		return extentTest;
 	}
 	
-	public static void endTest()
-	{
-		getReporter().flush();
+	public static void endTest() {
+	    if (extent != null) {
+	        extent.flush();
+	    }
 	}
 	
 	public static ExtentTest getTest()
@@ -91,7 +102,7 @@ public class ExtentManager {
 		File src = ts.getScreenshotAs(OutputType.FILE);
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
 		
-		String destPath =  System.getProperty("user.dir")+"/src/test/resources/screenshots/"+screenShotName+"_"+timeStamp+".png";
+		String destPath =  System.getProperty("user.dir")+"/test-output/screenshots/"+screenShotName+"_"+timeStamp+".png";
 	
 		File finalPath =new File(destPath);
 		try {

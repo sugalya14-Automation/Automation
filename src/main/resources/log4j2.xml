@@ -39,18 +39,26 @@
 
     </Appenders>
 
-    <Loggers>
+     <Loggers>
 
+        <!-- Framework Logger -->
         <Logger name="com.orangehrm"
                 level="trace"
                 additivity="false">
-
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileLogger"/>
             <AppenderRef ref="ErrorFileLogger"/>
-
         </Logger>
 
-    </Loggers>
+        <!-- Root Logger -->
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+        </Root>
 
+    </Loggers>
+    
+	
+	
 </Configuration>
+
+
