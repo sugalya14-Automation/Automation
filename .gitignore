@@ -6,3 +6,8 @@ test-output/
 
 # Eclipse files (optional)
 .metadata/
+
+
+# Logs
+logs/
+*.log

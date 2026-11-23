@@ -1,5 +1,0 @@
-com\orangehrm\pages\LoginPage.class
-com\orangehrm\utilities\LoggerManager.class
-com\orangehrm\pages\HomePage.class
-com\orangehrm\actiondriver\ActionDriver.class
-com\orangehrm\base\BaseClass.class
