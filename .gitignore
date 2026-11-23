@@ -1,0 +1,8 @@
+# Maven generated files
+target/
+
+# TestNG reports
+test-output/
+
+# Eclipse files (optional)
+.metadata/

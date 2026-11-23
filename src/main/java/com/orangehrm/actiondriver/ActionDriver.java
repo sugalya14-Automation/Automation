@@ -2,7 +2,6 @@ package com.orangehrm.actiondriver;
 
 import java.time.Duration;
 
-import org.jspecify.annotations.NonNull;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -27,129 +26,141 @@ public class ActionDriver {
 	}
 	
 	//Click
-	public void Click(By by)
+	public void click(By by)
 	{
-		try {
-			waitForElementToBeClickable(by);
-			driver.findElement(by).click();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			 System.out.println("Unable to click: "+e.getMessage());
-		}
+			WebElement element = waitForElementToBeClickable(by);
+			element.click();
+	
 	}
 	
 	//Enter text
 	public void enterText(By by,String value)
 	{
-		try {
-			waitForElementToBeVisible(by);
-			driver.findElement(by).clear();
-			WebElement element = driver.findElement(by);
+			WebElement element = waitForElementToBeVisible(by);
 			element.clear();
 			element.sendKeys(value);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Unable to enter value: "+e.getMessage());
-		}
+	
 	}
 	
 	//get text
 	public String getText(By by)
 	{
-		try {
-			waitForElementToBeVisible(by);
-			return driver.findElement(by).getText();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Unable to get Text"+e.getMessage());
-			return "";
-		}
+		WebElement element =	waitForElementToBeVisible(by);
+			return element.getText();
+		
 	}
 	
 	//CompareText
-	public void compareText(By by,String expectedText)
+	public boolean compareText(By by,String expectedText)
 	{
-		try {
-			waitForElementToBeVisible(by);
-			String actualText = driver.findElement(by).getText();
-			if(expectedText.equals(actualText))
-			{
-				System.out.println("Matching:");
-			}
-			else
-			{
-				System.out.println("Not Matching:");
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Unable to compare"+e.getMessage());
-		}
+		WebElement element = waitForElementToBeVisible(by);
+			String actualText = element.getText();
+			return expectedText.equals(actualText);
 	}
 	
 	//element displayed
 	public boolean isDisplayed(By by)
 	{
-	 try {
-		waitForElementToBeVisible(by);
-		 return driver.findElement(by).isDisplayed();
+
+		 return waitForElementToBeVisible(by).isDisplayed();
 		 
-	 } catch (Exception e) {
-		// TODO Auto-generated catch block
-		 System.out.println("Not Visible");
-		 return false;
-	 }
-	 
 	}
 	
 	//Scroll
 	public void scrolltoElement(By by)
 	{
-		try {
+	
 			JavascriptExecutor js = (JavascriptExecutor) driver;
 			WebElement element = driver.findElement(by);
-			js.executeScript("arguments[0],scrollIntoView(true)",element);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			 System.out.println("Failed to locate ");
-		}
+			js.executeScript("arguments[0].scrollIntoView(true);",element);
+		
 		
 	}
 	
 	//page wait to load
-	public void waitForPageLoad(int timeOutInSec)
+	public void waitForPageLoad()
 	{
-		try {
-			wait.withTimeout(Duration.ofSeconds(timeOutInSec)).until(WebDriver -> ((JavascriptExecutor)WebDriver).executeScript("return document.readyState").equals("Complete"));
-			System.out.println("Page load success");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Page load failed");
-		}
+		
+		    wait.until(
+		        webDriver -> ((JavascriptExecutor) webDriver)
+		            .executeScript("return document.readyState")
+		            .equals("complete")
+		    );
+		
 		
 	}
 	//Clickable
-	public @NonNull WebElement waitForElementToBeClickable(By by) {
-	 try {	
-		@NonNull
-		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(by));
-		return element;
-	 } catch (Exception e)
-	 {
-		 System.out.println("element not clickable:"+e.getMessage());
-	 
-	 return null;
-	 }	
+	public WebElement waitForElementToBeClickable(By by) {
+	
+		return wait.until(ExpectedConditions.elementToBeClickable(by));
+		
 	}
 	
 	//Visible
 	public WebElement waitForElementToBeVisible(By by) {
-		 try {	
+		 
 			 return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
-		 } catch (Exception e)
-		 {
-			 System.out.println("element not Visible:"+e.getMessage());
-			 return null;
-		 }
 			
 		}
+
+	public String getElementDescription(By locator) {
+		if(driver==null)
+			return "driver is null";
+		if(locator==null)
+			return "locator is null";
+		try {
+			WebElement element = driver.findElement(locator);
+			String name = element.getDomProperty("name");
+			String id = element.getDomProperty("id");
+			String text = element.getText();
+			String classname = element.getDomProperty("class");
+			String placeholder = element.getDomProperty("placeholder");
+			if(isNotEpmty(name))
+				return "Element with name:"+name;
+			else if(isNotEpmty(id))
+				return "Element with id:"+id;
+			else if(isNotEpmty(text))
+				return "Element with text:"+truncate(text,50);
+			else if(isNotEpmty(id))
+				return "Element with classname:"+classname;
+			else if(isNotEpmty(id))
+				return "Element with placeholder:"+truncate(placeholder,50);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+		}
+		return "";
+	
+	}
+	
+	private boolean isNotEpmty(String value)
+	{
+		return value!=null && !value.isEmpty();
+	}
+	
+	private String truncate(String value,int maxLength)
+	{
+		if(value==null || value.length()<=maxLength)
+		return value;
+		else
+		return value.substring(0,maxLength)+"...";
+	}
+	
+	
+	public void highlightElement(By locator) {
+
+
+	    WebElement element = wait.until(
+	        ExpectedConditions.visibilityOfElementLocated(locator)
+	    );
+
+	    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+	    js.executeScript(
+	        "arguments[0].style.border='3px solid red';" +
+	        "arguments[0].style.backgroundColor='yellow';",
+	        element
+	    );
+	}
+	
 }

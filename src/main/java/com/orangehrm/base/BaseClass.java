@@ -4,96 +4,150 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
 
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+
+import com.orangehrm.utilities.LoggerManager;
 
 
  
 public class BaseClass {
 	
 	static Properties prop;
-	protected WebDriver driver;
+	private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+	public static final Logger logger =  LoggerManager.getLogger(BaseClass.class);
 	
-	
+	@BeforeSuite
 	public void loadconfig() throws IOException
 	{
 		 prop = new Properties();
-		FileInputStream fis = new FileInputStream("src/main/resources/config.properties");
+		try(FileInputStream fis = new FileInputStream("src/main/resources/config.properties"))
+		{
 		prop.load(fis);
+		}
+		logger.info("config.properties file loaded");
 	}
 	
 	
-	@BeforeSuite
-	public void setup() throws IOException
+	@BeforeMethod
+	public void setup()
 	{
-		 driver = new ChromeDriver();
-		System.out.println("Execution starts..");
-		loadconfig();
-		launchBrowser();
 		
+		
+		try
+		{
+			String browser = prop.getProperty("browser");
+			if (browser == null || browser.isBlank()) {
+		
+		
+		        throw new IllegalArgumentException(
+		            "Browser is missing in config.properties"
+		        );
+		    }
+		  
+		if (browser.equalsIgnoreCase("chrome")) {
+		    setDriver(new ChromeDriver());
+		} else if (browser.equalsIgnoreCase("firefox")) {
+		    setDriver(new FirefoxDriver());
+		} else {
+		    throw new IllegalArgumentException("Unsupported browser: " + browser);
+		}
+		logger.info("Execution starts..");
+		
+		launchBrowser();
+	
+		logger.info("Browser launched");
+		logger.trace("Trace");
+		logger.debug("Debug");
+		logger.warn("Warn");
+		} catch (Exception e) {
+
+	        try {
+	            WebDriver webDriver = getDriver();
+
+	            if (webDriver != null) {
+	                webDriver.quit();
+	            }
+
+	        } finally {
+	            driver.remove();
+	        }
+
+	        throw e;
+			
+		}
+		 
 	}
 	
 	public void launchBrowser() 
 	{
 		System.out.println("Launch Browser");
-		//implicit wait
-		int wait = Integer.parseInt(prop.getProperty("implicitWait"));
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(wait));
-			
+		
+		if (getDriver() == null) {
+		    throw new IllegalStateException("WebDriver initialization failed");
+		}
+
+			String windowHandle = getDriver().getWindowHandle();
+			System.out.println("Browser launched successfully: " + windowHandle);
 
 		//Maximize the browser
-		driver.manage().window().maximize();
+			getDriver().manage().window().maximize();
+		
+		WebDriverWait wait1 = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
 		
 		//Navigate to URL
-		String AppUrl = prop.getProperty("url");
+		String appUrl = prop.getProperty("url");
+		if (appUrl == null || appUrl.isBlank()) {
+		    throw new IllegalStateException("Application URL is missing in config.properties");
+		}
+
 		System.out.println("Launch URL..");	
-		driver.get(AppUrl);
-		staticWait(20);
-		
+		getDriver().get(appUrl);
+		Boolean title = wait1.until(ExpectedConditions.titleContains("OrangeHRM"));
+		Assert.assertTrue(title, "OrangeHRM page did not load successfully");
 	}
 	
-	@AfterMethod
+	@AfterMethod(alwaysRun = true)
 public void quit()
 {
-  if(driver!=null)
-  {
-	  System.out.println("Close Browser");
-	 	driver.quit();  
-  }
-	
-	
+		
+	    try {
+	    	WebDriver webDriver = getDriver();
+
+
+		        if (webDriver != null) {
+		            webDriver.quit();
+		            logger.info("Browser closed successfully");
+		        }
+		    } finally {
+		        driver.remove();
+		    }	
+	  
 }
 
-public void staticWait(int seconds)
-{
-	  LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(seconds));
-}
 
 //Getter
-public WebDriver getDriver()
-{
-	  return driver;
-}
-	
-//Setter
-public void setDriver(WebDriver driver) {
-	this.driver = driver;
-}
+	public static WebDriver getDriver() {
+	    return driver.get();
+	}
+
+	public static void setDriver(WebDriver webDriver) {
+	    driver.set(webDriver);
+	}
 	
 	public static Properties getProp()
 	{
-		try {
 			return prop;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
 		
 	}
 }
