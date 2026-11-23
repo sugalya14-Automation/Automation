@@ -35,27 +35,28 @@ The framework follows the Page Object Model (POM) design pattern to improve code
 SeleniumWebDriver
 │
 ├── src
-│   ├── main
-│   │   └── resources
-│   │
 │   └── test
-│       ├── java
-│       │   └── com.orangehrm
+│   |   ├── java
+│   |   │   └── com.orangehrm
+│   |   │       ├── tests
+│   |   │       └── utilities
+│   │   |___ resources
+│   |      ├── ExtentReport
+|   |      |__ screenshots
+│   |      └── TestData.xlsx│       
+│   ├── main
+│       └──  com.orangehrm
+│       │       ├── actionDriver
 │       │       ├── base
 │       │       ├── pages
-│       │       ├── tests
 │       │       └── utilities
-│       │
 │       └── resources
 │           ├── config.properties
-│           └── TestData.xlsx
-│
+│           └── log4j2.xml
 ├── .gitignore
 ├── pom.xml
 └── README.md
-```
 
-*Note: Adjust the folder names above to match the actual project structure.*
 
 ## Prerequisites
 
@@ -65,7 +66,7 @@ Before running the automation tests, ensure you have:
 - Maven installed and configured
 - Chrome or Firefox browser
 - An IDE such as Eclipse or IntelliJ IDEA
-- Git (optional, for cloning the repository)
+- GitHub (optional, for cloning the repository)
 
 ## Setup Instructions
 
@@ -92,14 +93,6 @@ To clean the previous build and execute tests:
 ```bash
 mvn clean test
 ```
-
-To execute tests using a specific TestNG suite file:
-
-```bash
-mvn clean test -DsuiteXmlFile=testng.xml
-```
-
-*The second command requires the Maven Surefire Plugin to be configured to accept the `suiteXmlFile` property.*
 
 ## Test Data
 
